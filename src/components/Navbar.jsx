@@ -15,6 +15,7 @@ const Navbar = () => {
     const [showPopup, setShowPopup] = useState(false);
     const navContainerRef = useRef(null);
     const audioElementRef = useRef(null);
+    const popupRef = useRef(null);
     const { y: currentScrollY } = useWindowScroll();
 
     const toggleAudioIndecator = () => {
@@ -69,8 +70,20 @@ const Navbar = () => {
     }, [isAudioPlaying]);
 
     useEffect(() => {
-        setShowPopup(true);
+        const timer = setTimeout(() => {
+            setShowPopup(true);
+        }, 3000);
+        return () => clearTimeout(timer);
     }, []);
+
+    useEffect(() => {
+        if (showPopup) {
+            gsap.fromTo(popupRef.current,
+                { opacity: 0, x: 20 },
+                { opacity: 1, x: 0, duration: 0.5 }
+            );
+        }
+    }, [showPopup]);
 
     return (
         <div ref={navContainerRef} className={`fixed inset-x-0 ${openNavigation ? "top-0" : "top-4"} z-50 h-16 border-none transition-all duration-700 sm:inset-x-6`}>
@@ -101,7 +114,7 @@ const Navbar = () => {
                             ))}
                         </button>
                         {showPopup && (
-                            <div className={`${openNavigation ? "hidden" : "flex"} absolute top-[3.7rem] text-sm w-64 gap-3 right-0 font-general bg-violet-300 text-blue-50 p-6 rounded items-center`}>
+                            <div ref={popupRef} className={`${openNavigation ? "hidden" : "flex"} absolute top-[3.7rem] text-sm w-64 gap-3 right-0 font-general bg-violet-300 text-blue-50 p-6 rounded items-center`}>
                                 <span>You can always turn on the sound</span>
                                 <button onClick={() => setShowPopup(false)} className="ml-2 text-black">
                                     X
